@@ -31,7 +31,7 @@ module.exports = function (getMain, data, con, res) {
         return;
     }
     
-    const ourInst = room.playing.media;
+    const ourInst = JSON.parse(JSON.stringify(room.playing.media));
     const mediaIds = playlist.media.map((media) => {return media.id;});
     while (mediaIds.contains(ourInst.id))
         ourInst.id++;
