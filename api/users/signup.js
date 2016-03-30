@@ -6,11 +6,14 @@ module.exports = function (getMain, data, con, res) {
         res.ends(['Missing data'], 400, 'bad request');
         return;
     }
-    if (data.email.contains("..") || data.email.contains("/"))
+
+    if (data.email.contains("..") || data.email.contains("/")){
         res.ends(['no'], 403, 'no');
-    
-    var usernameCheck = getMain().getSTO().list.map((obj) => {return obj.name}).contains(data.username);
-    var emailCheck = getMain().getSTO().list.map((obj) => {return obj.email}).contains(data.email);
+        return;
+    }
+
+    var usernameCheck = getMain().getSTO().map((obj) => {return obj.name}).contains(data.username);
+    var emailCheck = getMain().getSTO().map((obj) => {return obj.email}).contains(data.email);
     
     if (usernameCheck) {
         res.ends(['Username in use'], 400, 'bad request');
