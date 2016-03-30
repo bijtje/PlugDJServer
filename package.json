@@ -1,0 +1,27 @@
+{
+    "name": "plug.dj",
+    "version": "0.0.1",
+    "description": "private and confidential",
+    "author": "Ghost <notgghost@gmail.com>",
+    "contributors": [{
+        "name": "Ghost",
+        "email": "notgghost@gmail.com"
+	}],
+    "dependencies": {
+        "dateformat": "*",
+        "colors": "*",
+        "express": "*",
+        "passport": "*",
+        "image-size": "*",
+        "md5": "*",
+        "node-uuid": "*",
+        "sanitize-html": "*",
+        "websocket": "*"
+        
+    },
+    "license": "Copyright (C) itsghost.me - All Rights Reserved\r\n Unauthorized copying of this file, via any medium is strictly prohibited\r\nProprietary, private and confidential",
+    "private": true,
+    "scripts": { 
+        "start":  "node index.js"
+    }
+}

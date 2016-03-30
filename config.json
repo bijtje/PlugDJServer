@@ -1,0 +1,39 @@
+{
+    "sport": 333,
+    "port": 5001,
+    "host": "beta.itsghost.me:5001",
+    "cdn": "beta.itsghost.me:5001",
+    "server": "beta.itsghost.me",
+    "motd": "Dev PlugDJ",
+    "theme": "2k14def", 
+    "mode": "whitelist",
+    "whitelist": null,
+    "API": "",
+    "version": "0.0.1",
+    "tw": "",
+    "debug": false,
+    "xp": {    
+        "advance": 1,
+        "woot": 4,
+        "dj": 8
+    },
+    "alg": "//level * 2 + x",
+    "pp": {   
+        "advance": 3,
+        "woot": 5,
+        "dj": 20
+    },
+    "news": [ {
+        "desc": "FOSS backend for plug.dj",
+        "title": "Welcome to plug",
+        "href": "http://itsghost.me"
+    }, {
+        "desc": "FOSS backend for plug.dj",
+        "title": "Welcome to plug",
+        "href": "http://itsghost.me"
+    }, {
+        "desc": "FOSS backend for plug.dj",
+        "title": "Welcome to plug",
+        "href": "http://itsghost.me"
+    }]
+}
