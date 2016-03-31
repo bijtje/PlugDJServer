@@ -19,6 +19,8 @@ module.exports = function (getMain, data, con, res) {
             get(room);
         } else if (method === 'DELETE') {
             deleteBan(room);
+        } else {
+            res.ends(['Invalid method'], 405, 'Invalid method');
         }
     });
 

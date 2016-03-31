@@ -14,8 +14,8 @@ var disinfectConfig = {
 
 module.exports = function (getMain) {
     var server = http.createServer(function (request, response) {
-        response.writeHead(404)
-        response.end()
+        response.writeHead(404);
+        response.end();
     });
 
     server.listen(getMain().config.sport, function () {
@@ -48,20 +48,20 @@ module.exports = function (getMain) {
                 
                 switch (payload.type) {
                     case 'auth': 
-                        var se = getMain().sessions.filter((obj) => {
+                        var session = getMain().sessions.filter((obj) => {
                             return obj.token === payload.payload
-                        });
+                        })[0];
                         
-                        if (se.length === 0)
+                        if (!(session))
                             return;
                         
-                        conn.session = se[0];
+                        conn.session = session;
                         
-                        if (conn.session.socket) 
-                            conn.session.stop();
+                        if (session.socket) 
+                            session.stop();
                         
-                        conn.session.startPing();
-                        conn.session.socket = conn;
+                        session.startPing();
+                        session.socket = conn;
                         
                         conn.sendEvent('ack', 1, 'dashboard');
                         

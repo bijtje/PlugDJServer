@@ -25,13 +25,17 @@ module.exports = function (getMain, data, con, res) {
                 slug += "-";
             slug += Math.getRandom(0, 9).toString();
         }
-        
-        var ids = getMain().rooms.map((room) => {return room.id;});
+
+        var ids = getMain().rooms.map((room) => {
+            return room.id;
+        });
         var id = 0;
+
         while (ids.contains(id))
-            id ++;
+            id++;
 
         var room = new Room(getMain, slug);
+
         room.slug = slug;
         room.name = data.name;
         room.creator = store.name;
@@ -49,7 +53,7 @@ module.exports = function (getMain, data, con, res) {
             "id": room.id,
             "name": room.name,
             "slug": room.slug
-                }]);
+        }]);
     }
 
     function doGet() {
@@ -62,7 +66,9 @@ module.exports = function (getMain, data, con, res) {
                 if (keyWords.length === 0)
                     return true;
                 for (word of keyWords)
-                    if (room.name.toLowerCase().contains(word) || room.playing.media.title.toLowerCase().contains(word) || word.contains("plugdjall"))
+                    if (room.name.toLowerCase().contains(word) 
+                        || room.playing.media.title.toLowerCase().contains(word) 
+                        || word.contains("plugdjall"))
                         return true;
                 return false;
             })

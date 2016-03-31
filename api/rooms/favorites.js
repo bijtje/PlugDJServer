@@ -1,19 +1,22 @@
 var logger = require('./../logger.js');
 
 module.exports = function (getMain, data, con, res) {
-    if (!(data)) {
+    if (data) 
+        doPost();
+    else
         doSearch();
-        return;
+    
+    function doPost() {
+        if (!((typeof data.id) === 'number')) {
+            res.ends(['Missing id/field'], 400);
+            return;
+        }
+
+        var favs = con.session.store().favs.push(data.id);
+
+        res.ends([]);
     }
-
-    if (!(data.id)) {
-        res.ends(['Missing id/field'], 400);
-        return;
-    }
-
-    var favs = con.session.store().favs.push(data.id);
-
-    res.ends([]);
+    
 
     function doSearch() {
         res.ends(getMain().rooms

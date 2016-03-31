@@ -18,11 +18,13 @@ module.exports = function (getMain, data, con, res) {
         } else if (method === 'GET') {
             get(room);
         } else if (method === 'DELETE') {
-            deleteBan(room);
+            deleteMute(room);
+         } else {
+            res.ends(['Invalid method'], 405, 'Invalid method');
         }
     });
 
-    function deleteBan(room) {
+    function deleteMute(room) {
         var store = session.store();
         var id = url.substring(url.lastIndexOf('/') + 1);
         
@@ -105,7 +107,7 @@ module.exports = function (getMain, data, con, res) {
 
         room.mutes.push(payload);
 
-        room.broadcast("modBan", {
+        room.broadcast("modMute", {
             "m": payload.moderator,
             "i": payload.id,
             "t": payload.username,

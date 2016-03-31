@@ -34,7 +34,6 @@ var main = {
 
 
 program.onStopping = () => {
-   //main.sessions.map((obj) => {return obj.store()}) 
     main.sessions.forEach((session) => {
         session.socket.sendEvent('plugMaintenance', {}); 
     });
@@ -53,6 +52,7 @@ program.onLaunch = (error) => {
     new SocketHandler(() => {
         return main;
     });
+    logger.info('Ready!');
 };
 
 function loadRooms() {
@@ -62,7 +62,7 @@ function loadRooms() {
             if (!(file.endsWith('.json')))
                 return;
             var room = new Room(() => {
-                return main
+                return main;
             }, file.toString().before('.json'));
             room.load();
             main.rooms.push(room);
@@ -80,13 +80,11 @@ function save() {
     if (main.saving) return;
     main.saving = true;
     logger.log('Saving users');
-    for (usr of main.storeSync) {
+    for (usr of main.storeSync) 
         userstore.saveUser(usr);
-    }
     logger.log('Saving rooms');
-    for (room of main.rooms) {
+    for (room of main.rooms) 
         room.save();
-    }
     main.saving = false;
     logger.log('Done!');
 }

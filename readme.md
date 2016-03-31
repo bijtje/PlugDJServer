@@ -6,7 +6,7 @@ Welcome to the repository for the open source plug.dj (backend) project! If you 
 This repository contains none of `Plug DJ Inc`'s assets, nor would we want encourage the redistribution of them, to the best of our knowledge. We may tell end users how to download assets, however, said end users are reminded that this code comes with no warranty. All end users are responsible for any damages in any form that may occur, whilst the repository owner or legal owner will not be held responsible, for anything that occurs as a result of the code in this repository. This project as of 29/03/2016 (DD/MM/YYYY) is strictly a research project. This legal portion is subject to change.
 
 #Code
-The code is subject to change and messy functions like the room instances will more than likely change alot until they are highly optimized. Currently, this code is designed to load all rooms into memory, then each user as they login, therefore making it inefficient for production on low end servers, however, we don't expect to get that much traffic anyway.
+The code is subject to change and messy functions like the room instances will more than likely change alot until they are highly optimized. Currently, this code is designed to load all rooms into memory, then each user as they login, therefore making it inefficient for production on low end servers, however, we don't expect to get that much traffic anyway. And hey, it was written in 5 days, it's it's not 'that' bad.
 
 #Installation instructions
 

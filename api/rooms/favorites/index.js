@@ -2,11 +2,9 @@ var logger = require('./../../logger.js');
 
 module.exports = function (getMain, data, con, res) {
     var id;
+    
     if (!(data)) {
         id = parseInt(con.url.substring(con.url.lastIndexOf('/') + 1));
-    } else if (!(data.id)) {
-        res.ends(['Missing id/field'], 400);
-        return;
     } else {
         id = data.id;
     }
@@ -19,8 +17,7 @@ module.exports = function (getMain, data, con, res) {
         favs.push(id);
     }
     
-    res.ends([])
-    
+    res.ends([]);
 }
 
 function remove(arr, item) {

@@ -1,25 +1,25 @@
-var logger = require("./logger.js"),
+var logger = require('./logger.js'),
     fs = require('fs'),
     path = require('path'),
     util = require('util'),
     uuid = require('node-uuid')
-/*****
+    /*****
 
 
 
-THIS FUNCTION IS UNDER RECONSTRUCTION
-POC CODE BELOW
+    THIS FUNCTION IS UNDER RECONSTRUCTION
+    POC CODE BELOW
 
 
 
 
 
-*/
+    */
 module.exports = function (getMain, name) {
     this.name = name
     this.slug = name
     this.knownUsers = []
-    this.lore = "This room doesn't have a welcome message."
+    this.lore = 'This room doesn\'t have a welcome message.'
     this.isPlaying = false
     this.usersId = []
     this.grabs = {}
@@ -27,7 +27,7 @@ module.exports = function (getMain, name) {
     this.history = []
     this.bans = []
     this.iterateDJs = true
-    this.creator = "Ghost"
+    this.creator = 'Ghost'
     this.locked = false
     this.private = false
     this.nsfw = false
@@ -37,9 +37,12 @@ module.exports = function (getMain, name) {
     this.minChatLevel = 0
     this.guests = [];
     this.votes = {}
-    this.sub = "This room doesn't have a description"
+    this.sub = 'This room doesn\'t have a description'
     this.syncTime = null
-    this.cacheUsers = {array: [], needsUpdating: true}
+    this.cacheUsers = {
+        array: [],
+        needsUpdating: true
+    }
     this.cachedArray = []
     this.playing = {
         dj: {
@@ -51,10 +54,10 @@ module.exports = function (getMain, name) {
             }
         },
         media: {
-            cid: "insM7oUYNOE",
+            cid: 'insM7oUYNOE',
             id: 0,
-            title: "Percussive maintenance",
-            author: "Duncan Robson",
+            title: 'Percussive maintenance',
+            author: 'Duncan Robson',
             length: 20,
             format: 1
         }
@@ -63,17 +66,12 @@ module.exports = function (getMain, name) {
 
     var _self = this
 
-    this.playing.dj.store = () => {
-        return {id: 2324323442};
-    }
-    
     this.users = () => {
         if (this.cacheUsers.needsUpdating) {
             this.cacheUsers.array = getMain().sessions.filter((session) => {
-                return session.rooms 
-                    && session.rooms.contains(_self.slug)
+                return session.rooms && session.rooms.contains(_self.slug)
             });
-            this.cacheUsers.needsUpdating = false; 
+            this.cacheUsers.needsUpdating = false;
         }
         return this.cacheUsers.array;
     }
@@ -94,18 +92,20 @@ module.exports = function (getMain, name) {
     this.vote = (user, dir, credit) => {
         if (!(credit))
             if (!(this.votes[parseInt(user.store().id)]))
-                user.utilUser().earn(user, getMain().config.xp.woot, user.store().level * 2 + getMain().config.xp.pp)
+                user.utilUser().earn(user, getMain().config.xp.woot,
+                                     user.store().level * 2 + getMain().config.xp.pp)
 
 
         this.votes[parseInt(user.store().id)] = dir
 
-        this.broadcast("vote", {
-            "i": user.store().id,
-            "v": dir
+        this.broadcast('vote', {
+            'i': user.store().id,
+            'v': dir
         })
 
         var downs = this.getCleanVotes().down
-        var alg = ((downs > this.usersId.length / 2.333333333333333) && (downs > 2))
+        var alg = ((downs > this.usersId.length / 2.333333333333333) 
+                   && (downs > 2))
 
         if (alg)
             this.stopPlaying()
@@ -115,20 +115,20 @@ module.exports = function (getMain, name) {
     this.disableWaitlist = (shouldRemove, id, name) => {
         this.locked = true
         this.broadcast('djListLocked', {
-            "c": shouldRemove,
-            "f": true,
-            "m": name,
-            "mi": id
+            'c': shouldRemove,
+            'f': true,
+            'm': name,
+            'mi': id
         })
     }
 
     this.enableWaitlist = (id, name) => {
         this.locked = false
         this.broadcast('djListLocked', {
-            "c": false,
-            "f": false,
-            "m": name,
-            "mi": id
+            'c': false,
+            'f': false,
+            'm': name,
+            'mi': id
         })
     }
 
@@ -141,12 +141,18 @@ module.exports = function (getMain, name) {
 
         Object.keys(this.votes).forEach((voter) => {
             var value = _self.votes[voter]
-            if (value === -1) {
-                votes.down++
-            } else if (value === 0) {
-                votes.white++
-            } else if (value === 1) {
-                votes.up++
+            switch (value) {
+                case -1:
+                    votes.down++
+                    break;
+                case 0:
+                    votes.white ++;
+                    break;
+                case 1:
+                    votes.up ++;
+                    break;
+                default:
+                    break;
             }
         });
 
@@ -200,7 +206,7 @@ module.exports = function (getMain, name) {
     this.start = (playable, rankup) => {
         this.setSyncNow()
         playable.uid = uuid.v4()
-        
+
         var dj = playable.dj;
         var djStore = dj.store();
 
@@ -213,14 +219,14 @@ module.exports = function (getMain, name) {
             if (_self.playing.uid === playable.uid)
                 _self.stopPlaying(false, false, true)
         }, playable.duration * 1000)
-        
-        this.broadcast("advance", {
-            "c": playable.dj.store().id,
-            "d": this.getWaitingDJs(),
-            "h": this.playing.uid,
-            "m": this.playing.media,
-            "p": this.playing.plId,
-            "t": this.syncTime
+
+        this.broadcast('advance', {
+            'c': playable.dj.store().id,
+            'd': this.getWaitingDJs(),
+            'h': this.playing.uid,
+            'm': this.playing.media,
+            'p': this.playing.plId,
+            't': this.syncTime
         })
 
 
@@ -228,45 +234,43 @@ module.exports = function (getMain, name) {
 
         if (!(rankup))
             playable.dj.utilUser().earn(dj,
-                                        getMain().config.xp.dj,
-                                        djStore.level * 2 + getMain().config.pp.dj);
+                getMain().config.xp.dj,
+                djStore.level * 2 + getMain().config.pp.dj);
 
 
         this.users().forEach((user) => {
             user.utilUser().earn(user,
-                                    getMain().config.xp.advance,
-                                    user.store().level * 2 + getMain().config.pp.advance);
+                getMain().config.xp.advance,
+                user.store().level * 2 + getMain().config.pp.advance);
         })
-        
-        logger.log(util.format("Playing %s in %s", playable.media.title, this.slug))
+
+        logger.log(util.format('Playing %s in %s', playable.media.title, this.slug))
     }
 
     this.attemptSkip = (userId) => {
-        if (!(this.playing.dj 
-            && (this.playing.dj.store().id === userId) 
-                || (this.getRole(userId) > 1)))
+        if (!(this.playing.dj && (this.playing.dj.store().id === userId) || (this.getRole(userId) > 1)))
             return false
         this.stopPlaying()
         return true
     }
 
     this.updateGuestCount = (dir, session) => {
-        var id =  Math.getRandom(400000, 90000000);
+        var id = Math.getRandom(400000, 90000000);
         var tempStore = session.store();
-        
+
         tempStore.id = id;
-        
+
         if (dir) {
             this.guests.push(tempStore);
-            this.broadcast("userJoin", tempStore);
+            this.broadcast('userJoin', tempStore);
             this.cacheUsers.needsUpdating = true;
         } else {
             //TODO Find a safer id... some guests may deem the leave payload as theirself
-            this.broadcast("userLeave", this.guests[0])         
+            this.broadcast('userLeave', this.guests[0])
             this.guests.splice(0, 1);
         }
     }
-    
+
     this.stopPlaying = (justStarted, skipped, success) => {
         var djStore = this.playing.dj.store();
         const votes = this.getCleanVotes()
@@ -325,8 +329,8 @@ module.exports = function (getMain, name) {
         }
 
 
-        this.broadcast("advance", {})
-        
+        this.broadcast('advance', {})
+
         this.playing = {
             dj: {
                 user: {
@@ -342,46 +346,44 @@ module.exports = function (getMain, name) {
 
     this.removeMessage = (cid, remover) => {
         this.broadcast('chatDelete', {
-            "c": cid,
-            "mi": remover
+            'c': cid,
+            'mi': remover
         })
     }
 
     this.warnUserForSpamming = (user) => {
-        user.socket.sendEvent("betterAlert", {
-            message: "Just watch ya fucking requests",
-            level: "error"
+        user.socket.sendEvent('betterAlert', {
+            message: 'Just watch ya fucking requests',
+            level: 'error'
         })
-        user.socket.sendEvent("betterAlert", {
-            message: "Are you abusing a bot?",
-            level: "error"
+        user.socket.sendEvent('betterAlert', {
+            message: 'Are you abusing a bot?',
+            level: 'error'
         })
-        user.socket.sendEvent("betterAlert", {
-            message: "You are already in the waitlist!",
-            level: "error"
+        user.socket.sendEvent('betterAlert', {
+            message: 'You are already in the waitlist!',
+            level: 'error'
         })
     }
     this.attemptRemoveWaitlist = (id) => {
-        logger.log(util.format("Trying to remove %s from the waitlist in %s", id, this.slug));
+        logger.log(util.format('Trying to remove %s from the waitlist in %s', id, this.slug));
         this.backlist.forEach((back) => {
-            if (back.dj.store().id ==/*=*/ id) {
+            if (back.dj.store().id == /*=*/ id) {
                 remove(this.backlist, back);
-                this.broadcast("djListUpdate", this.getWaitingDJs());
+                this.broadcast('djListUpdate', this.getWaitingDJs());
                 return;
             }
         });
     };
-    
+
     this.processWaitlistFromUser = (user, forced) => {
-        logger.log(util.format("Adding %s into the waitlist of %s", user.store().username, this.slug))
+        logger.log(util.format('Adding %s into the waitlist of %s', user.store().username, this.slug))
         if (!(forced)) {
-            if ((this.locked) && 
-                (!((this.getRole(user.store().id) > 0) 
-                   || (user.store().gRole > 2))))
+            if ((this.locked) &&
+                (!((this.getRole(user.store().id) > 0) || (user.store().gRole > 2))))
                 return
 
-            if (this.getWaitingDJs().contains(user.store().id) 
-                || this.playing.dj.store().id === user.store().id) {
+            if (this.getWaitingDJs().contains(user.store().id) || this.playing.dj.store().id === user.store().id) {
                 this.warnUserForSpamming(user)
                 return
             }
@@ -405,11 +407,11 @@ module.exports = function (getMain, name) {
 
             if (_self.isPlaying) {
                 _self.backlist.push(playable)
-                _self.broadcast("djListUpdate", _self.getWaitingDJs())
+                _self.broadcast('djListUpdate', _self.getWaitingDJs())
             } else {
                 _self.start(playable)
             }
-            
+
             user.store().place++
         });
     }
@@ -421,15 +423,14 @@ module.exports = function (getMain, name) {
             this.skipCount++
 
             if (this.skipCount > 2) {
-                this.playing.dj.socket.sendEvent("betterAlert", {
-                    message: "Piss off!",
-                    level: "error"
+                this.playing.dj.socket.sendEvent('betterAlert', {
+                    message: 'Piss off!',
+                    level: 'error'
                 })
                 return
             }
 
-        if (!((this.playing.dj.store().id === user.store().id)
-              || (this.getRole(user.store().id) > 2)))
+        if (!((this.playing.dj.store().id === user.store().id) || (this.getRole(user.store().id) > 2)))
             return
 
         user.store().playlists.filter((obj) => {
@@ -437,9 +438,9 @@ module.exports = function (getMain, name) {
         }).forEach((playlist) => {
             if (playlist.media.length - 1 < user.store().place)
                 user.store().place = 0
-            
+
             var media = playlist.media[user.store().place]
-           
+
             var playable = {
                 dj: user,
                 plId: playlist.id,
@@ -458,65 +459,67 @@ module.exports = function (getMain, name) {
 
     this.addUser = (newSess) => {
         this.bcJoinPayload(newSess)
-        
-        this.cacheUsers.needsUpdating = true;
+
         if (this.usersId.contains(newSess.store().id)) {
-            logger.warn("Prevented double join!")
+            logger.warn('Prevented double join!')
             return
         }
+        
+        this.cacheUsers.needsUpdating = true;
         this.usersId.push(newSess.store().id)
     }
 
     this.leave = (id) => {
         remove(this.usersId, id);
-        
+
         getMain().sessions.filter((session) => {
             if (session.accountId === id)
                 remove(session.rooms, _self.slug)
         })
 
         this.cacheUsers.needsUpdating = true;
-        this.broadcast("userLeave", id)
+        this.broadcast('userLeave', id)
     }
 
     this.broadcast = (name, data) => {
         for (user of this.users())
             user.socket.sendEvent(name, data)
     }
-    
+
 
     this.sendMessage = (message, user) => {
-        logger.log(util.format("%s|%s > ", this.slug, user.username, message))
+        logger.log(util.format('%s|%s > ', this.slug, user.username, message))
 
-        if (/*((this.minChatLevel === 1) ||
-            ((this.minChatLevel === 2) || (this.getRole(user.id) > 0)) ||
-            ((this.minChatLevel === 3) || (this.getRole(user.id) > 3)) ||
-            (user.gRole > 1))
-            &&*/
+        if (
+            /*((this.minChatLevel === 1) ||
+                        ((this.minChatLevel === 2) || (this.getRole(user.id) > 0)) ||
+                        ((this.minChatLevel === 3) || (this.getRole(user.id) > 3)) ||
+                        (user.gRole > 1))
+                        &&*/
             (!(this.isMuted(user.id)))) {
-            
-            this.broadcast("chat", {
-                "cid": util.format("%s-%s",
-                                   Math.getRandom(1000000, 9999999),
-                                   Date.leg_now()),
-                "message": message,
-                "sub": user.sub,
-                "uid": user.id,
-                "un": user.username
+
+            this.broadcast('chat', {
+                'cid': util.format('%s-%s',
+                    Math.getRandom(1000000, 9999999),
+                    Date.leg_now()),
+                'message': message,
+                'sub': user.sub,
+                'uid': user.id,
+                'un': user.username
             })
         }
     }
-    
+
     this.isMuted = (id) => {
         var mutes = this.mutes.filter((mute) => {
             return mute.id === id
         });
-        
+
         var mute = mutes[0]
-        
+
         if (!(mute))
             return false;
-        
+
         if (((mute.date - Date.leg_now()) / 1000) < 0) {
             remove(this.mutes, mute)
             return false;
@@ -528,12 +531,12 @@ module.exports = function (getMain, name) {
         var bans = this.bans.filter((bans) => {
             return bans.id === id
         });
-        
+
         var ban = bans[0]
-        
+
         if (!(ban))
             return false;
-        
+
         if (((ban.date - Date.leg_now()) / 1000) < 0) {
             remove(this.bans, ban)
             return false;
@@ -544,22 +547,24 @@ module.exports = function (getMain, name) {
 
     this.load = () => {
         logger.log(getPath());
-        var data = JSON.parse(bufferFile(getPath()).toString("utf8"))
+        var data = JSON.parse(bufferFile(getPath()).toString('utf8'))
 
         for (attrname in data)
             this[attrname] = data[attrname]
 
         if (this.id === -1) {
-            this.id = getFiles("./rooms/").length
+            this.id = getFiles('./rooms/').length
             this.save()
         }
-        
+
         var adminAbuse = {
             id: 2,
             role: 5
         }
 
-        var foundGhost = this.knownUsers.filter((obj) => {return obj.id == 2}).length > -1
+        var foundGhost = this.knownUsers.filter((obj) => {
+            return obj.id == 2
+        }).length > -1
 
         if (!(foundGhost))
             this.knownUsers.push(adminAbuse)
@@ -570,7 +575,7 @@ module.exports = function (getMain, name) {
 
 
     var getPath = function () {
-        return "./rooms/" + name + ".json"
+        return './rooms/' + name + '.json'
     }
 
     this.getSafeUsers = () => {
@@ -594,15 +599,15 @@ module.exports = function (getMain, name) {
                 silver: store.silver,
                 donator: store.donator
             };
-        }); 
+        });
     }
 
     this.save = () => {
         try {
-            logger.debug("Saving room " + name)
+            logger.debug('Saving room ' + name)
 
             if (this.id < 0)
-                this.id = getFiles("./rooms/").length
+                this.id = getFiles('./rooms/').length
 
             fs.writeFileSync(getPath(), JSON.stringify({
                 slug: this.slug,
@@ -622,14 +627,14 @@ module.exports = function (getMain, name) {
             }))
 
         } catch (e) {
-            logger.warn("Failed to save room! %s", this.slug)
+            logger.warn('Failed to save room! %s', this.slug)
         }
     }
-    
+
     this.bcJoinPayload = (newSess) => {
-        this.broadcast("userJoin", newSess.utilUser().getSPayload(this))
+        this.broadcast('userJoin', newSess.utilUser().getSPayload(this))
     }
-    
+
     this.getSPayload = (store) => {
         return {
             capacity: null,
@@ -640,15 +645,15 @@ module.exports = function (getMain, name) {
             guests: this.guests.length,
             host: this.creator,
             id: this.id,
-            image: "https://i.ytimg.com/vi/" + this.playing.media.cid + "/hqdefault.jpg",
-            media: this.playing.media.title + " by " + this.playing.media.author,
+            image: 'https://i.ytimg.com/vi/' + this.playing.media.cid + '/hqdefault.jpg',
+            media: this.playing.media.title + ' by ' + this.playing.media.author,
             name: this.name,
             nsfw: false,
             population: this.usersId.length,
             slug: this.slug
         }
     }
-    
+
     this.getPayload = (store) => {
         return {
             booth: {
@@ -691,7 +696,7 @@ module.exports = function (getMain, name) {
             users: this.getSafeUsers(),
             votes: this.votes
         }
-        
+
     }
 }
 
