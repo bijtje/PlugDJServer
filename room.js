@@ -44,15 +44,9 @@ module.exports = function (getMain, name) {
         needsUpdating: true
     }
     this.cachedArray = []
+    
+    
     this.playing = {
-        dj: {
-            user: {
-                id: null
-            },
-            store: () => {
-                return {};
-            }
-        },
         media: {
             cid: 'insM7oUYNOE',
             id: 0,
@@ -62,6 +56,7 @@ module.exports = function (getMain, name) {
             format: 1
         }
     }
+
     this.id = -1
 
     var _self = this
@@ -87,19 +82,20 @@ module.exports = function (getMain, name) {
         this.syncTime = Date.now()
     }
 
-    this.setSyncNow()
 
     this.vote = (user, dir, credit) => {
+        var store = user.store();
+        
         if (!(credit))
-            if (!(this.votes[parseInt(user.store().id)]))
+            if (!(this.votes[parseInt(user.id)]))
                 user.utilUser().earn(user, getMain().config.xp.woot,
-                                     user.store().level * 2 + getMain().config.xp.pp)
+                                     user.level * 2 + getMain().config.xp.pp)
 
 
-        this.votes[parseInt(user.store().id)] = dir
+        this.votes[parseInt(user.id)] = dir
 
         this.broadcast('vote', {
-            'i': user.store().id,
+            'i': user.id,
             'v': dir
         })
 
@@ -248,7 +244,9 @@ module.exports = function (getMain, name) {
     }
 
     this.attemptSkip = (userId) => {
-        if (!(this.playing.dj && (this.playing.dj.store().id === userId) || (this.getRole(userId) > 1)))
+        if (!(this.playing.dj
+              && (this.playing.dj.store().id === userId) 
+                    || (this.getRole(userId) > 1)))
             return false
         this.stopPlaying()
         return true
@@ -270,6 +268,22 @@ module.exports = function (getMain, name) {
             this.guests.splice(0, 1);
         }
     }
+    
+    this.nullPlaying = () => {
+        this.isPlaying = false;
+        this.playing = {
+            dj: {
+                user: {
+                    id: null
+                },
+                store: () => {
+                    return {};
+                }
+            },
+            media: this.playing.media
+        }
+	}
+    
 
     this.stopPlaying = (justStarted, skipped, success) => {
         var djStore = this.playing.dj.store();
@@ -331,19 +345,9 @@ module.exports = function (getMain, name) {
 
         this.broadcast('advance', {})
 
-        this.playing = {
-            dj: {
-                user: {
-                    id: null
-                },
-                store: () => {
-                    return {};
-                }
-            },
-            media: this.playing.media
-        }
+        this.nullPlaying();
     }
-
+    
     this.removeMessage = (cid, remover) => {
         this.broadcast('chatDelete', {
             'c': cid,
@@ -365,6 +369,7 @@ module.exports = function (getMain, name) {
             level: 'error'
         })
     }
+    
     this.attemptRemoveWaitlist = (id) => {
         logger.log(util.format('Trying to remove %s from the waitlist in %s', id, this.slug));
         this.backlist.forEach((back) => {
@@ -378,23 +383,28 @@ module.exports = function (getMain, name) {
 
     this.processWaitlistFromUser = (user, forced) => {
         logger.log(util.format('Adding %s into the waitlist of %s', user.store().username, this.slug))
+        
+        var store = user.store();
+        
         if (!(forced)) {
             if ((this.locked) &&
-                (!((this.getRole(user.store().id) > 0) || (user.store().gRole > 2))))
+                (!((this.getRole(store.id) > 0) 
+                    || (store.gRole > 2))))
                 return
 
-            if (this.getWaitingDJs().contains(user.store().id) || this.playing.dj.store().id === user.store().id) {
+            if (this.getWaitingDJs().contains(store.id) 
+                || this.playing.dj.store().id === store.id) {
                 this.warnUserForSpamming(user)
                 return
             }
         }
-        user.store().playlists.filter((obj) => {
+        store.playlists.filter((obj) => {
             return obj.active;
         }).forEach((playlist) => {
-            if (playlist.media.length - 1 < user.store().place)
+            if (playlist.media.length - 1 < store.place)
                 user.store().place = 0
 
-            var media = playlist.media[user.store().place]
+            var media = playlist.media[store.place]
             var playable = {
                 dj: user,
                 title: media.title,
@@ -412,13 +422,14 @@ module.exports = function (getMain, name) {
                 _self.start(playable)
             }
 
-            user.store().place++
+            store.place++
         });
     }
 
     //This will skip to the next playlist entry 
     //Not yet implemented in reguar plug
     this.skipSong = (user, ignore) => {
+        var store = user.store();
         if (!(ignore))
             this.skipCount++
 
@@ -430,16 +441,17 @@ module.exports = function (getMain, name) {
                 return
             }
 
-        if (!((this.playing.dj.store().id === user.store().id) || (this.getRole(user.store().id) > 2)))
+        if (!((this.playing.dj.store().id === store.id) 
+              || (this.getRole(store.id) > 2)))
             return
 
-        user.store().playlists.filter((obj) => {
+        store.playlists.filter((obj) => {
             return obj.active
         }).forEach((playlist) => {
-            if (playlist.media.length - 1 < user.store().place)
-                user.store().place = 0
+            if (playlist.media.length - 1 < store.place)
+                store.place = 0
 
-            var media = playlist.media[user.store().place]
+            var media = playlist.media[store.place]
 
             var playable = {
                 dj: user,
@@ -453,7 +465,7 @@ module.exports = function (getMain, name) {
 
             _self.start(playable, true)
 
-            user.store().place++
+            store.place++
         })
     }
 
@@ -698,6 +710,10 @@ module.exports = function (getMain, name) {
         }
 
     }
+	
+	
+    this.setSyncNow()
+    this.nullPlaying()
 }
 
 
