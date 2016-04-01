@@ -19,7 +19,7 @@ module.exports = function (getMain, data, con, res) {
         
         room.broadcast('djListCycle', {
             f: data.shouldCycle,
-            m: store.name,
+            m: store.username,
             mi: store.id
         });
         

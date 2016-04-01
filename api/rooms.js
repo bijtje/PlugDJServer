@@ -38,7 +38,7 @@ module.exports = function (getMain, data, con, res) {
 
         room.slug = slug;
         room.name = data.name;
-        room.creator = store.name;
+        room.creator = store.username;
         room.id = id;
         room.creatorId = store.id;
         room.knownUsers.push({

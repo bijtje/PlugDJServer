@@ -27,9 +27,9 @@ module.exports = function (getMain, data, con, res) {
         }
         
         if (data.isLocked) 
-            room.disableWaitlist(data.removeAllDJs, store.id, store.name);
+            room.disableWaitlist(data.removeAllDJs, store.id, store.username);
         else 
-            room.enableWaitlist(store.id, store.name);
+            room.enableWaitlist(store.id, store.username);
         
         res.ends([]);
     });
