@@ -11,8 +11,8 @@ The code is subject to change and messy functions like the room instances will m
 #Installation instructions
 
 - /assets/ - recreate the `/_/static/` structure OR throw everything in to the root directory
-- /scripts/ -place all .js files in here and/or recreate the `/_/static/` structure  
-- /css/ - place all .css files in here and/or recreate the `/_/static/` structure  
+- /scripts/ -place all your .js files in here
+- /css/ - place all your .css files in here
 - /pages/ - home.html - the index, room.html - room/dashboard 
 - /avatars/ - your scrapped avatars
 
