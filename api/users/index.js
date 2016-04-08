@@ -5,16 +5,16 @@ module.exports = function(getMain, data, con, res) {
     
     if (id === '-3') {
         res.ends([{
-            avatarID: 'admin01',
+            avatarID: 'admin05',
             badge: 'ba1',
             gRole: 5,
             id: -3,
-            slug: 'Console',
+            slug: '/',
             joined: Date.now(),
             level: 33,
             sub: true,
-            blurb: 'Console',
-            username: 'Console',
+            blurb: 'SUDO USER',
+            username: 'CONSOLE',
             silver: true,
             donator: true
         }]);

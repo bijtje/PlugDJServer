@@ -11,7 +11,7 @@ module.exports = function (getMain, data, con, res) {
         if (con.method === 'DELETE') {
             var uid = con.session.store().id;
             if (room.playing.dj.store().id === uid) {
-                room.stopPlaying(false, false, true);
+                room.stopPlaying(false, true, false);
             } else {
                 room.attemptRemoveWaitlist(uid);
             }

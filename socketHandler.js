@@ -60,8 +60,8 @@ module.exports = function (getMain) {
                         if (session.socket) 
                             session.stop();
                         
-                        session.startPing();
                         session.socket = conn;
+                        session.startPing();
                         
                         conn.sendEvent('ack', 1, 'dashboard');
                         
