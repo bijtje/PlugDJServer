@@ -21,7 +21,7 @@ module.exports = function (getMain, data, con, res) {
             if (badge.pp < store.pp) {
                 store.pp -= badge.pp;
                 store.badges.list.push(badge);
-                res.ends([avatar]);
+                res.ends([{pp: store.pp}]);
                 return;
             } else {
                 res.ends(['Not enough pp'], 402, 'no funds');
@@ -37,7 +37,7 @@ module.exports = function (getMain, data, con, res) {
                 if (avatar.pp < store.pp) {
                     store.pp -= avatar.pp;
                     store.avatars.list.push(avatar);
-                    res.ends([avatar]);
+                res.ends([{pp: store.pp}]);
                     return;
                 } else {
                     res.ends(['Not enough pp'], 402, 'no funds');

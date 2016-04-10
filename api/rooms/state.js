@@ -5,7 +5,7 @@ module.exports = function (getMain, data, con, res) {
     
     session.room((room) => { 
         if (!(room)) {
-            res.ends(["Not in a room"], 200, 'showdash');
+            res.ends(["Not in a room"], 400, 'requestError');
             return;
         }
         

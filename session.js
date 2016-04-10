@@ -96,13 +96,23 @@ module.exports = function(getMain, token) {
                     "value": store.level
                 }]);
 
-                this.updateUser();
+                this.updateUser(true, false, false, true);
               }
         };
         
-        this.updateUser = () => {
+        this.updateUser = (leg, avatar, badge, level) => {
+            leg = !leg;
             var store = _self.store();
-            var payload = {
+            var payload = badge ? {
+                i: store.id,
+                badge: store.badge
+            } : avatar ? {
+                i: store.id,
+                avatarID: store.avatarID
+            } : level ? {
+                i: store.id,
+                level: store.level
+            } : {
                 i: store.id,
                 xp: store.xp,
                 sub: store.sub,

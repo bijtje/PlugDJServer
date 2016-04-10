@@ -20,7 +20,7 @@ module.exports = function (getMain, data, con, res) {
     
     store.avatarID = data.id;
     
-    session.utilUser().updateUser();
+    session.utilUser().updateUser(true, true);
     
-    res.ends(['ok']);
+    res.ends([store]);
 }
