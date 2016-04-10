@@ -79,7 +79,7 @@ module.exports = function (getMain) {
         var config = getMain().config;
 
         if ((config.mode) && (config.whitelist)) {
-            var isWhiteListed = con.ips.filter((ip) => {
+            var isWhiteListed = con.getIps().filter((ip) => {
                 return config.whitelist.contains(ip.substring(ip.lastIndexOf(':') + 1));
             }).length || config.whitelist.contains(con.ip.substring(con.ip.lastIndexOf(':') + 1));
             
@@ -239,22 +239,20 @@ module.exports = function (getMain) {
     function setupCon(con, res) {
         con.url = con.originalUrl.toString();
         con.start = Date.leg_now();
-        con.ip = con.headers['x-forwarded-for'] 
+        var ipHeader = con.headers['x-forwarded-for'] 
             || con.connection.remoteAddress;
         con.headers.cookie = con.headers.cookie 
             || '';
         con.cookies = {};
-     
-        con.ips = [];
-
         
-        if (con.ip.contains(',')) {
-            logger.warn("Ues");
-            con.ips = ip.replaceAll(' ', '').split(',');
-            con.ip = con.ips[0];
-        } else  {
-            con.ips = [con.ip];
+        con.getIps = () => {
+            if (ipHeader.contains(',')) {
+                return ipHeader.split(', ');
+            } else {
+                return [ipHeader];
+            }
         }
+
 
         parseParms(con, res);
         addSessionAndTokenIfMissing(con, res);

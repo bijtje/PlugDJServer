@@ -27,6 +27,18 @@ module.exports = function (getMain, data, con, res) {
         else 
             room.knownUsers.push({role: role, id: uid});
         
+        room.broadcast('modStaff', {
+            m: store.username,
+            mi: store.id,
+            u: [
+                {
+                    n: 'unknown',
+                    i: uid,
+                    p: role
+                }
+            ]
+        });
+        
         res.ends([]);
     });
 }

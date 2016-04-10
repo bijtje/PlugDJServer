@@ -1,6 +1,7 @@
 var express = require('express'),
     logger = require('./logger'),
     util = require('util'),
+    sanitizeHtml = require('sanitize-html'),
     http = require('http');
 
 var WebSocketServer = require('websocket').server;
@@ -74,8 +75,10 @@ module.exports = function (getMain) {
                         if (payload.payload.replaceAll(' ', '') === '')
                             return;
                         conn.session.getRooms().forEach((room) => {
-                            room.sendMessage(payload.payload,
-                                             conn.session.store());
+                            var message = sanitizeHtml(payload.payload,
+                                                 disinfectConfig);
+                            console.log(message);
+                            room.sendMessage(message, conn.session.store());
                         })
                         break;
                     default:
