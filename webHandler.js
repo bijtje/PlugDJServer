@@ -249,6 +249,8 @@ module.exports = function (getMain) {
             if (ipHeader.contains(',')) {
                 return ipHeader.split(', ');
             } else {
+                if (ipHeader.contains(':'))
+                    return [ipHeader.substring(ipHeader.lastIndexOf(':') + 1)];
                 return [ipHeader];
             }
         }
