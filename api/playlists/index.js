@@ -80,7 +80,7 @@ module.exports = function (getMain, data, con, res) {
         var id = data.ids[0];
         var media = playlist.media;
         
-        media.splice(media.indexOf(utilUser.getMedia(id)), 1);
+        media.splice(media.indexOf(utilUser.getMedia(id, playlist)), 1);
         playlist.count = media.length;
         
         res.ends(media);
@@ -110,9 +110,9 @@ module.exports = function (getMain, data, con, res) {
         var index = playlist.media.length - 1;
         
         if (!(bid === -1)) 
-            index = playlist.media.indexOf(utilUser.getMedia(bid));
+            index = playlist.media.indexOf(utilUser.getMedia(bid, playlist));
 
-        var item = utilUser.getMedia(id);
+        var item = utilUser.getMedia(id, playlist);
         
         if (!(item)) {
             res.ends(['Item not found (unlike plug, ids are per user)'], 404, 'not found');
@@ -121,7 +121,6 @@ module.exports = function (getMain, data, con, res) {
         
         var oldIndex = playlist.media.indexOf(item);
         
-        logger.debug('Old index %s, new index %s', oldIndex, index);
         playlist.media.move(oldIndex, index);
         
         res.ends(playlist.media);

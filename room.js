@@ -669,10 +669,10 @@ module.exports = function (getMain, name) {
     this.getPayload = (store) => {
         return {
             booth: {
-                'currentDJ': this.isPlaying ? this.playing.dj.store().id : null,
-                'isLocked': this.locked,
-                'shouldCycle': this.iterateDJs,
-                'waitingDJs': this.getWaitingDJs()
+                currentDJ: this.isPlaying ? this.playing.dj.store().id : null,
+                isLocked: this.locked,
+                shouldCycle: this.iterateDJs,
+                waitingDJs: this.getWaitingDJs()
             },
             fx: [],
             grabs: this.grabs,

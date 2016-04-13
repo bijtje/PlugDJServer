@@ -55,11 +55,16 @@ module.exports = function(getMain, token) {
         };
         
         //hacky
-        this.getMedia = (id) => {
+        this.getMedia = (id, playlist) => {
+            if (playlist) {
+                return playlist.media.filter((media) => {
+                    return media.id === id;
+                })[0];
+            }
             var a = [];
             for (obj of _self.store().playlists) {
                 var media = obj.media.filter((media) => {
-                    return media.id == id;
+                    return media.id === id;
                 })[0];
                 if (media)
                     a.push(media);

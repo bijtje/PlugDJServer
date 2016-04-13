@@ -77,7 +77,6 @@ module.exports = function (getMain) {
                         conn.session.getRooms().forEach((room) => {
                             var message = sanitizeHtml(payload.payload,
                                                  disinfectConfig);
-                            console.log(message);
                             room.sendMessage(message, conn.session.store());
                         })
                         break;
