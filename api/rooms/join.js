@@ -15,10 +15,20 @@ module.exports = function (getMain, data, con, res) {
         res.ends(["Room not found"], 404);
         return;
     }
-
-    if (!(con.session.rooms.contains(slug)))
-        con.session.rooms.push(slug);
+ 
+    for (room of con.session.getRooms()) {
+        if (con.session.loggedIn)
+            room.leave(con.session.accountId);
+        else
+            room.updateGuestCount(false, con.session);
+    }
     
+
+   //if (!(con.session.rooms.contains(slug))) #push
+   con.session.rooms = [slug];
+    
+ 
+
     if (con.session.loggedIn) {
         var ban = room.isBanned(con.session.store().id);
         if (ban) {
