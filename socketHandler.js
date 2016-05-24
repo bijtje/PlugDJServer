@@ -96,7 +96,7 @@ module.exports = function (getMain) {
 
         conn.on('error',(reasonCode) => {
             if (reasonCode.toString().contains('write after end')) return;
-            logger.warn(reasonCode)
+            logger.warn(reasonCode);
         });
 
         conn.on('close', (reasonCode, description) => {
@@ -105,12 +105,12 @@ module.exports = function (getMain) {
             if (!(conn.session))
                 return;
             
-            for (room of conn.session.getRooms()) {
+            conn.session.getRooms().forEach((room) => {
                 if (conn.session.loggedIn) 
                     room.leave(conn.session.accountId);
                 else
                     room.updateGuestCount(false, conn.session);
-            }
+            });
         });
     });
 }

@@ -43,12 +43,16 @@ program.onStopping = () => {
 
 program.onLaunch = (error) => {
     logger.info('Starting up.');
-    setupConfig();
+    
+    loadConfiguration();
     loadRooms();
+    
     setTimeout(saveLoop, 15 * 1000 * 60);
+    
     new WebHandler(() => {
         return main;
     });
+    
     new SocketHandler(() => {
         return main;
     });
@@ -64,9 +68,12 @@ function loadRooms() {
             var room = new Room(() => {
                 return main;
             }, file.toString().before('.json'));
+            
             room.load();
+            
             main.rooms.push(room);
-            logger.log('Loaded room ' + room.name);
+            
+            logger.log('Loaded room %s', room.name);
         });
     });
 };
@@ -79,17 +86,20 @@ function saveLoop() {
 function save() {
     if (main.saving) return;
     main.saving = true;
-    logger.log('Saving users');
-    for (usr of main.storeSync) 
+    
+    logger.log('AutoSave!');
+    
+    main.storeSync.forEach((usr) => {
         userstore.saveUser(usr);
-    logger.log('Saving rooms');
-    for (room of main.rooms) 
+    });
+    main.rooms.forEach((room) => {
         room.save();
+    });
+    
     main.saving = false;
-    logger.log('Done!');
 }
 
-function setupConfig() {
+function loadConfiguration() {
     main.avatars = JSON.parse(fs.readFileSync('./avatars.json', {
         encoding: 'utf8'
     }));
@@ -103,8 +113,9 @@ function setupConfig() {
     }));
     
     var conf = {};
-    for (attrname in raw)
-        conf[attrname] = raw[attrname]
+    Object.keys(raw).forEach((attrname) => {
+        conf[attrname] = raw[attrname];
+    });
         
     conf.theme = {};
     conf.theme.player = raw.theme + '.png';
@@ -116,8 +127,7 @@ function setupConfig() {
         conf.theme.frameh = dimensions.height;
     });
     
-    main.config = conf;
-    
-}
+    main.config = conf;  
+};
 
 new Framework(program, false);

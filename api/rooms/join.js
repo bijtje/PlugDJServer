@@ -16,18 +16,14 @@ module.exports = function (getMain, data, con, res) {
         return;
     }
  
-    for (room of con.session.getRooms()) {
+    con.session.getRooms().forEach((room) => {
         if (con.session.loggedIn)
             room.leave(con.session.accountId);
         else
             room.updateGuestCount(false, con.session);
-    }
+    });
     
-
-   //if (!(con.session.rooms.contains(slug))) #push
-   con.session.rooms = [slug];
-    
- 
+    con.session.rooms = [slug];
 
     if (con.session.loggedIn) {
         var ban = room.isBanned(con.session.store().id);
@@ -40,8 +36,9 @@ module.exports = function (getMain, data, con, res) {
             return;
         }
         room.addUser(con.session);
-    } else
+    } else {
         room.updateGuestCount(true, con.session);
-
+    }
+    
     res.ends({});
-}
+};
