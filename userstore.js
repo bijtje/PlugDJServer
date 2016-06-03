@@ -16,7 +16,14 @@ module.exports = new function () {
     this.getUser = function (email, callback) {
         logger.log('Loading info for ' + email);
         fs.readFile(getPath(email), 'utf8', function (err, contents) {
-            callback(JSON.parse(contents));
+            var data = JSON.parse(contents);
+            
+            if (!isNaN(parseInt(data.joined))) {
+                data.joined = Date.now();
+                logger.warn('Updated a users joined date to %s!', Date.now());
+            } 
+            
+            callback(data);
         });
     };
 
@@ -383,7 +390,7 @@ function getFiles(srcpath) {
     return fs.readdirSync(srcpath).filter(function (file) {
         return (!(fs.statSync(path.join(srcpath, file)).isDirectory()));
     });
-}
+};
 
 
 function bufferFile(relPath) {

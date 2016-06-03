@@ -48,6 +48,7 @@
             logger.log('Server started!');
         })
 
+        
         function process(con, res) {
             //Add the extra functions
             setupConnection(con, res);
@@ -63,12 +64,11 @@
 
             if (url.contains('..'))
                 return;
-
+            
             //router
             getAssetTypeFromURL(url, function (type) {
                 switch (type) {
                     case 'IDK':
-                        res.statusCode = 404;
                         serveUTFAsset(res, './pages/404.html');
                         break;
                     case 'JAVASCRIPT':
@@ -326,7 +326,7 @@
         //Deprecated
         function existsSync(path) {
             if (!(path.startsWith('.')))
-                path = ''.' + path;
+                path = '.' + path;
             try {
                 fs.accessSync(path, fs.F_OK);
                 return true;
@@ -338,13 +338,13 @@
 
         //serve 
         function tryServeUTFAsset(res, path) {
-            var type = getAssetTypeFromURL(path);
-            var utf = type === 'JAVASCRIPT' || type === 'STYLE' || type === 'PAGE' || path.contains('html');
-
-            if (utf)
-                serveUTFAsset(res, path);
-            else
-                serveAsset(res, path);
+            getAssetTypeFromURL(path,  function(type) {
+                var utf = type === 'JAVASCRIPT' || type === 'STYLE' || type === 'PAGE' || path.contains('html');
+                if (utf)
+                    serveUTFAsset(res, path);
+                else
+                    serveAsset(res, path);
+            });
         };
 
         //serve 
@@ -353,12 +353,14 @@
             if (!(path.startsWith('.')))
                 path = '.' + path;
 
-            exists(path), function (found) {
+            exists(path, function (found) {
                 if (found) {
-                    res.end(replacePlaceHolders(fs.readFileSync(path, 'utf8')));
+                    fs.readFile(path, function (err, data) {
+                        res.end(replacePlaceHolders(data.toString('utf8')));
+                    });
                 } else {
                     res.statusCode = 404;
-                    res.end(util.format('%s was not found', path));
+                    serveUTFAsset(res, './pages/404.html');
                 }
             });
         };
@@ -371,9 +373,11 @@
 
             exists(path, function (found) {
                 if (found) {
-                    res.end(fs.readFileSync(path), 'binary');
+                    fs.readFile(path,function (err, data) {
+                        res.end(data);
+                    });
                 } else {
-                    res.end(util.format('%s was not found', path));
+                    serveUTFAsset(res, './pages/404.html');
                 }
             });
         };
@@ -399,31 +403,44 @@
             patha = util.format('./%s/%s', path, con.originalUrl.replace('/_/static/', ''));
             pathb = './' + path + con.url.substring(con.originalUrl.lastIndexOf('/'));
 
-            exists(pathb, function (found) {
-                if (found) {
-                    tryServeUTFAsset(res, pathb);
-                } else {
-                    tryServeUTFAsset(res, patha);
-                }
-            });
+            var found = existsSync(pathb);
+            if (found) {
+                tryServeUTFAsset(res, pathb);
+            } else {
+                tryServeUTFAsset(res, patha);
+            }
         };
 
         function getAssetTypeFromURL(url, cb) {
             if (url.endsWith('/'))
                 url = url.substring(0, url.length - 1);
 
-            if (url.indexOf('js') > -1)
+            if (url.indexOf('js') > -1) {
                 cb('JAVASCRIPT');
-            if (url.contains('css'))
+                return
+            }
+            
+            if (url.contains('css')) {
                 cb('STYLE');
-            if (url.contains('_/') && !url.contains('_/static'))
+                return;
+            }
+            
+            if (url.contains('_/') && !url.contains('_/static')) {
                 cb('API');
-            if (url.contains('@/'))
+                return
+            }
+            
+            if (url.contains('@/')) {
                 cb('PROFILE');
+                return;
+            }
+            
             if (getMain().rooms.filter((obj) => {
-                    return url.contains(obj.slug)
-                }).length)
+                    return url.contains(obj.slug) 
+                }).length){
                 cb('ROOM');
+                return;
+            }
 
 
             exists('.' + url.replace('_/static', 'assets'), function (found) {
